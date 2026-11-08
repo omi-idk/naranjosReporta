@@ -1,5 +1,73 @@
 # Avance real
 
+## Incremento V2 — estado vigente
+
+Fecha local: 7 de noviembre de 2026. Fases 0/1 V2 auditadas y rediseño implementado; fases 2–4 tienen código integrado, **sin validación positiva con servicios reales**. Fase 5 parcialmente verificada. No declarar el MVP completo ni listo para piloto público.
+
+### Auditoría y clasificación actual
+
+| Funcionalidad                                  | Clasificación y evidencia                                                                            |
+| ---------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| Navegación, exploración y diseño responsive    | Implementada/verificada en navegador 1440/768/390                                                    |
+| Mapa Leaflet, teselas y selección manual       | Implementada/verificada con teselas OSM reales                                                       |
+| Búsqueda, filtros, paginación y proximidad API | Implementada parcialmente: validaciones/SQL y UI; datos positivos necesitan BD                       |
+| Formulario y revisión                          | Implementada; restricciones, consentimiento y selección probados; envío exitoso pendiente de BD/Auth |
+| Persistencia, consulta y detalle privado       | Implementados en SQL real; no se ha ejecutado migración ni probado registro vía API real             |
+| Supabase Auth y roles                          | Implementados parcialmente; límites sin sesión probados, cuenta válida pendiente                     |
+| Cola/aprobación/rechazo e historial            | Implementados parcialmente; permisos negativos probados, flujo positivo pendiente                    |
+| Estadísticas                                   | Implementadas sobre datos persistidos; solo error real verificado sin BD                             |
+| Imágenes                                       | No implementadas; subida deshabilitada explícitamente                                                |
+| PWA                                            | Manifest/iconos y aviso offline implementados; caché verificada solo offline.html                    |
+| Denuncias, eliminación y defensa por red/IP    | Documentadas como requisitos; no implementadas                                                       |
+| Integración BD                                 | Suite de seis tests preparada, omitida por falta de conexión                                         |
+
+### Trabajo y decisiones
+
+- Se ejecutaron tres subagentes reales: diseño/producto, backend/GIS, QA/seguridad. El orquestador implementó frontend, integró cambios, CI, configuración y documentación; no se ejecutaron nueve agentes simultáneos.
+- Aplicadas frontend-design, ui-ux-pro-max y web-design-guidelines. El buscador Python de ui-ux no pudo ejecutarse porque Python no existe; se revisó fuente y se usó guía estática, sin inventar resultados.
+- Nueva dirección neutral/azul, inicio compacto, listado/mapa dividido, vista móvil lista/mapa, formularios y estados honestos. Corregido espacio vacío excesivo en móvil y textos de mapa a 12 px después de crítica de capturas.
+- API real con pg parametrizado, DTO sin autor, coordenadas aproximadas y proximidad a esa misma precisión. Prisma conserva esquema/migraciones. ADR 0003 justifica la transacción SQL completa.
+- Sesión Bearer verificada en Supabase, rol local de BD, token solo en memoria; creación pendiente/evento atómicos, cuota persistida y control de concurrencia. Evidencia y registro público aún no habilitados.
+- Migración aditiva RLS y revocación de privilegios públicos para evitar acceso directo por PostgREST. No aplicada: necesita revisión y prueba con PostGIS.
+- Catálogo idempotente sin reportes, compose local ligado a loopback, guía docs/local-setup.md y job CI PostGIS/integración preparados.
+- AGENTS.md raíz y nueve roles declarativos en .codex/agents; claves contrastadas con documentación oficial. `codex.cmd --strict-config doctor --summary` con permisos aprobados cargó configuración (22 OK, 3 advertencias opcionales, 0 fallos); sandbox inicial no resolvía HOME.
+
+### Verificación V2 ejecutada
+
+| Comando o revisión                         | Resultado                                                                                                      |
+| ------------------------------------------ | -------------------------------------------------------------------------------------------------------------- |
+| npm.cmd run typecheck                      | PASS                                                                                                           |
+| npm.cmd run lint                           | PASS                                                                                                           |
+| npm.cmd test                               | PASS: 41 pruebas, cinco archivos; repositorio probado con dobles explícitos                                    |
+| npm.cmd run db:validate / db:generate      | PASS                                                                                                           |
+| npm.cmd run build                          | PASS: páginas y rutas API generadas; manifest incluido                                                         |
+| npm.cmd run format:check                   | PASS antes del cierre documental; comprobación final al entregar                                               |
+| npm.cmd run test:integration               | Seis OMITIDAS, INTEGRATION_DATABASE_URL ausente; no es PASS de PostGIS                                         |
+| Playwright sobre producción 127.0.0.1:3001 | 11/11 PASS, 7.3 s; cinco límites API, navegación, selección/validación, tres anchos y PWA offline              |
+| Capturas 1440/768/390                      | Revisadas por QA y móvil también por orquestador; sin solapamiento ni desbordamiento; correcciones verificadas |
+| npm.cmd audit --omit=dev --json            | Cero vulnerabilidades conocidas de producción en consulta ejecutada                                            |
+| Auditoría de desarrollo                    | Ocho avisos moderados pendientes de herramientas de lint; no se aplicó fix --force                             |
+
+Las primeras E2E contra dev fallaron por hidratación/HMR; se aislaron en producción y pasaron. Hipótesis: conflicto dev/build sobre .next. Las teselas fueron bloqueadas por red del sandbox; la repetición autorizada cargó OSM real. Errores 503 de datos son esperados sin infraestructura, no se ocultaron ni tradujeron a cero. La suite no prueba persistencia ni usuario autenticado válido.
+
+### Git y límites operativos
+
+El commit inicial `4b69677` sí se subió a origin/master después de completar autenticación GitHub. Estos cambios V2 son locales, sin nuevo commit ni push. La carpeta de referencias del usuario se preserva intacta. No se desplegó ni ejecutó migración contra servicios externos.
+
+El usuario confirmó que no tiene PostgreSQL/Supabase y pidió instrucciones locales; se preparó docs/local-setup.md. No instalar Docker, crear cuentas remotas ni copiar secretos automáticamente. No hubo datos ciudadanos ni fixtures DEMO persistidos en esta sesión.
+
+### Próximo paso exacto
+
+1. Instalar/arrancar Docker Desktop y seguir docs/local-setup.md opción Supabase local. Configurar .env sin exponer claves, revisar/aplicar migraciones a base vacía y ejecutar db:seed.
+2. Ejecutar seis tests PostGIS con INTEGRATION_DATABASE_URL. Probar usuario ciudadano y moderador propios: crear→detalle privado→aprobar/rechazar→consulta pública y verificar IDOR, concurrencia y rol SQL/RLS.
+3. Implementar evidencia recodificada con storage privado, denuncias y límites por red/IP. Seleccionar licencia y responsable/canal de privacidad antes de piloto.
+4. Completar UI de cambios de seguimiento, proximidad/duplicados y pruebas positivas con servicios; revisar rendimiento espacial, WCAG y recuperación de cuentas.
+5. Revisar este incremento y pedir autorización antes de cualquier nuevo push/publicación.
+
+---
+
+## Historial: incremento inicial (anterior a V2)
+
 ## Fase actual
 
 Fase 0 completada; primer incremento de Fase 1 implementado. MVP todavía incompleto. Fecha local: 7 de noviembre de 2026.

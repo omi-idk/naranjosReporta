@@ -8,4 +8,8 @@ Supabase Auth es la opción prevista, aún sin integración: validar identidad e
 
 Migración inicial generada desde esquema y ampliada con PostGIS, índices y controles de auditoría; no ejecutada. Comparar esquema y migración con una instancia real antes de producción. El propietario de BD puede saltar controles: usar rol de aplicación sin DDL ni privilegios de superusuario.
 
-La referencia de producto se conserva en `naranjos-reporta-codex`; plan, ADR y avance de implementación están en `docs/` de la raíz. La portada es el único flujo web disponible actualmente.
+La referencia de producto se conserva en `naranjos-reporta-codex`; producto, diseño, roadmap, ADR y avance vigente están en `docs/` de la raíz. V2 incorpora exploración, mapa, formulario, acceso, detalle, moderación y estadísticas. El repositorio pg parametrizado concentra transacciones que incluyen PostGIS; Prisma permanece como esquema y migraciones (ADR 0003). No se verificó todavía la integración positiva con servicios reales.
+
+API recibe Bearer, valida con Supabase, consulta Role en User y produce DTO sin identidad. RLS sin políticas y privilegios públicos revocados bloquean acceso directo por PostgREST; el servidor debe usar un rol apropiado y revisado. Un rol no propietario necesita políticas explícitas: no basta configurarlo en DATABASE_URL.
+
+PWA registra worker en producción y guarda solamente un aviso offline estático. APIs, mapas, reportes y sesiones nunca se almacenan en caché del worker. No hay cola de envío offline ni persistencia local de borradores.

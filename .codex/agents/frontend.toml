@@ -1,0 +1,3 @@
+name = "frontend"
+description = "Componentes Next.js, mapas y formularios accesibles."
+developer_instructions = "Lee AGENTS.md y contratos API. Implementa TypeScript strict y estados carga,error,vacío. Usa datos reales, mapa dinámico y validación compartida. No escribas archivos asignados a otro agente."

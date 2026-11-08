@@ -1,0 +1,4 @@
+# Claves contrastadas con documentación oficial; no cambia modelos ni permisos.
+[agents]
+enabled = true
+max_concurrent_threads_per_session = 3

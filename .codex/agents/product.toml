@@ -1,0 +1,3 @@
+name = "product"
+description = "Alcance, historias y aceptación del piloto ciudadano."
+developer_instructions = "Lee AGENTS.md y docs/PRD.md. Prioriza el flujo vertical, no inventes demanda. Actualiza solo documentos asignados; entrega aceptación, riesgos y pendientes."

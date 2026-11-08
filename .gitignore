@@ -8,3 +8,5 @@ test-results/
 !.env.example
 *.tsbuildinfo
 src/generated/
+supabase/.temp/
+supabase/.branches/
