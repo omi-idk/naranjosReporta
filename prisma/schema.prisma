@@ -1,0 +1,105 @@
+generator client {
+  provider = "prisma-client"
+  output = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  CITIZEN
+  MODERATOR
+}
+
+enum ReportStatus {
+  PENDING_MODERATION
+  PUBLISHED
+  UNDER_REVIEW
+  SOLUTION_REPORTED
+  SOLUTION_VERIFIED
+  REJECTED
+}
+
+model User {
+  id String @id @db.Uuid
+  role Role @default(CITIZEN)
+  createdAt DateTime @default(now())
+  reports Report[]
+  events ReportEvent[]
+  confirmations ReportConfirmation[]
+  decisions ModerationDecision[]
+}
+
+model Category {
+  id String @id @default(uuid()) @db.Uuid
+  slug String @unique
+  name String
+  active Boolean @default(true)
+  reports Report[]
+}
+
+model Report {
+  id String @id @default(uuid()) @db.Uuid
+  authorId String @db.Uuid
+  author User @relation(fields: [authorId], references: [id], onDelete: Restrict)
+  categoryId String @db.Uuid
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  title String @db.VarChar(120)
+  description String @db.VarChar(2000)
+  location Unsupported("geography(Point,4326)")
+  coverage String @default("naranjos-amatlan")
+  status ReportStatus @default(PENDING_MODERATION)
+  version Int @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  images ReportImage[]
+  events ReportEvent[]
+  confirmations ReportConfirmation[]
+  decisions ModerationDecision[]
+  @@index([status, createdAt])
+  @@index([authorId])
+}
+
+model ReportImage {
+  id String @id @default(uuid()) @db.Uuid
+  reportId String @db.Uuid
+  report Report @relation(fields: [reportId], references: [id], onDelete: Restrict)
+  storageKey String @unique
+  mimeType String
+  byteSize Int
+  createdAt DateTime @default(now())
+}
+
+model ReportEvent {
+  id String @id @default(uuid()) @db.Uuid
+  reportId String @db.Uuid
+  report Report @relation(fields: [reportId], references: [id], onDelete: Restrict)
+  actorId String @db.Uuid
+  actor User @relation(fields: [actorId], references: [id], onDelete: Restrict)
+  fromStatus ReportStatus?
+  toStatus ReportStatus
+  reason String @db.VarChar(1000)
+  createdAt DateTime @default(now())
+  @@index([reportId, createdAt])
+}
+
+model ReportConfirmation {
+  reportId String @db.Uuid
+  report Report @relation(fields: [reportId], references: [id], onDelete: Restrict)
+  userId String @db.Uuid
+  user User @relation(fields: [userId], references: [id], onDelete: Restrict)
+  createdAt DateTime @default(now())
+  @@id([reportId, userId])
+}
+
+model ModerationDecision {
+  id String @id @default(uuid()) @db.Uuid
+  reportId String @db.Uuid
+  report Report @relation(fields: [reportId], references: [id], onDelete: Restrict)
+  moderatorId String @db.Uuid
+  moderator User @relation(fields: [moderatorId], references: [id], onDelete: Restrict)
+  outcome ReportStatus
+  reason String @db.VarChar(1000)
+  createdAt DateTime @default(now())
+}

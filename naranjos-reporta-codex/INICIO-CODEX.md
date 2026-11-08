@@ -1,0 +1,3 @@
+# Primera instrucción para Codex
+
+Lee `AGENTS.md`, `docs/PRD.md` y los roles de `docs/agents/`. Inspecciona el repositorio real antes de modificarlo. Actúa como orquestador: si existen herramientas multiagente, delega en paralelo solamente tareas independientes (por ejemplo, auditoría de producto, propuesta UI y threat modeling); si no, aplica los roles secuencialmente. Crea `docs/implementation-plan.md` y los ADR mínimos, luego comienza la Fase 1 con un incremento pequeño ejecutable. No publiques, no hagas push, no despliegues y no ejecutes acciones destructivas sin autorización. Ejecuta y documenta todas las verificaciones posibles en `docs/progress.md`.

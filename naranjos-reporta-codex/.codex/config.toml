@@ -1,0 +1,28 @@
+# Configuración de roles para versiones de Codex con soporte multiagente.
+# La disponibilidad de subagentes depende de la versión y del entorno del usuario.
+[agents]
+enabled = true
+
+[agents.product]
+description = "Product owner: leer docs/agents/product.md; definir historias, alcance, criterios de aceptación y prioridades; no programar por defecto."
+
+[agents.ui_ux]
+description = "Diseñador UI/UX: leer docs/agents/ui-ux.md; crear sistema visual, flujos, accesibilidad y revisión mobile-first."
+
+[agents.frontend]
+description = "Ingeniero frontend: leer docs/agents/frontend.md; construir Next.js, componentes, formularios y mapas accesibles."
+
+[agents.backend]
+description = "Ingeniero backend: leer docs/agents/backend.md; servicios, rutas API, contratos, validaciones y control de acceso."
+
+[agents.data_geo]
+description = "Ingeniero de datos y GIS: leer docs/agents/data-geo.md; PostgreSQL, PostGIS, índices, migraciones y consultas espaciales."
+
+[agents.security]
+description = "Revisor de seguridad y privacidad: leer docs/agents/security.md; detectar riesgos, verificar controles y producir hallazgos priorizados."
+
+[agents.qa]
+description = "Ingeniero QA: leer docs/agents/qa.md; pruebas, trazabilidad, regresión, accesibilidad y reporte de defectos."
+
+[agents.devops]
+description = "Ingeniero DevOps: leer docs/agents/devops.md; CI, ambiente local, builds reproducibles, secretos y despliegue seguro."
